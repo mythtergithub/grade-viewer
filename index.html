@@ -1,0 +1,206 @@
+<html>
+    <head>
+        <title>CS318 - Software Engineering 1 - AY 2023-2024 - 1st Semester</title>
+    </head>
+    <style>
+        body {
+            font-family: Arial;
+        }
+        #main {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #ccc;
+        }
+        #message {
+            color: #000;
+            background-color: white;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+        .app-title {
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 0;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        .success {
+            color: #fff !important;
+            background-color: green !important;
+        }
+        .error {
+            color: #fff !important;
+            background-color: red !important;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .input-group {
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="password"] {
+            padding: 5px;
+            border: none;
+            width: 250px;
+            font-weight: bold;
+        }
+        button {
+            font-weight: bold;
+        }
+        table.striped-table {
+            width: 100%;
+            padding: 5px;
+            border-radius: 5px;
+            background-color: black;
+            color: white;
+        }
+        table.striped-table tr:nth-child(even) {
+            background-color: white;
+            color: black;
+        }
+        table.striped-table td {
+            padding: 5px;
+        }
+        table.striped-table tr:hover {
+            background-color: #ccc;
+            color: black;
+            cursor: pointer;
+        }
+    </style>
+	<body>
+	    <div id="main">
+	        <h3 class="app-title">CS318 - Software Engineering 1 - AY 2023-2024 - 1st Semester</h3>
+	        <div class="input-group">
+	            <input type="text" id="txtSID" placeholder="Enter student ID (e.g. 17-00410)" />
+	        </div>
+	        <div class="input-group">
+        		<input type="password" id="txtCODE" placeholder="Enter code" /> No code yet? <button id="btnGETCODE">Get code here</button>
+        		<br/>
+        		<button id="btnVIEWGRADES">View Grades</button>
+    		</div>
+    		<div id="message" class="hidden">&nbsp;</div>
+    		<div id="data-table" class="hidden">
+    		    
+    		</div>
+	    </div>
+	</body>
+	<script src="https://ncfjourney-eb3b.restdb.io/rest/_jsapi.js"></script>
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+	<script>
+	    var apiUrl = "https://ncfjourney-eb3b.restdb.io/";
+	    var apiKey = "64ffc3426888540e5e0bff4c";
+        var ajaxSettings = {
+            "async": true,
+            "crossDomain": true,
+            "headers": {
+              "x-apikey": apiKey,
+              "content-type": "application/json"
+            },
+            "processData": false,
+        };
+	    $(function() {
+	        function clearMessage() {
+	            $('#message').removeClass('success error').addClass('hidden').html('')
+	        }
+	        $('#txtSID').focus();
+	        
+	        $('#btnGETCODE').on('click', function() {
+	            clearMessage();
+	            var db = new restdb(apiKey);
+	            var sid = $('#txtSID').val();
+	            if (!sid.length) {
+	                $('#message').removeClass('hidden success').addClass('error').html('Missing parameters!');
+	                return;
+	            }
+	            var query = {'student_id': sid};
+                var hints = {"$max": 1, "$fields": {"student_name": 1, "email": 1, "code": 1}};
+                db.cs318ay2324sem1.find(query, hints, function(err, res){
+                  if (!err){
+                    var student = res[0];
+                    if (!student.email.length) {
+                        $('#message').removeClass('hidden success').addClass('error').html('Missing email address!');
+                        return;
+                    }
+                    if (!student.code.length) {
+                        $('#message').removeClass('hidden success').addClass('error').html('Missing code!');
+                        return;
+                    }
+                    var subject = '[Code Request] CS318 - Software Engineering 1 - AY 2023-2024 - 1st Semester';
+                    var firstName = student.student_name.split(",")[1].trim().split(" ")[0];
+                    var body = 'Hi <b>' + firstName + '</b>!<p>Here is you unique code: <b>' + student.code + '</b><br>Go to: <a href="https://ncfjourney-eb3b.restdb.io/views/grades">https://ncfjourney-eb3b.restdb.io/views/grades</a></p><p>Cheers,<br>Sir John</p>';
+                    var emailProperties = {'subject': subject, 'html': body, 'to': student.email, 'company': 'NCF-CCS Solutions', 'sendername': "John Ryan Lorca"};
+                    ajaxSettings.method = "POST";
+                    ajaxSettings.url = apiUrl + "mail";
+                    ajaxSettings.data = JSON.stringify(emailProperties);
+                    $.ajax(ajaxSettings)
+                        .done(function (response) {
+	                        $('#message').removeClass('hidden error').addClass('success').html('Unique code sent! Please check your email.');
+                        }).fail(function (response) {
+                            console.log(response);
+                            $('#message').removeClass('hidden success').addClass('error').html('Something went wrong! Please contact your administrator.');
+                        });
+                  }
+                });
+	        });
+	        
+	        $('#btnVIEWGRADES').on('click', function() {
+	            clearMessage();
+	            var db = new restdb(apiKey);
+	            var sid = $('#txtSID').val();
+	            var code = $('#txtCODE').val();
+	            if (!sid.length || !code.length) {
+	                $('#message').removeClass('hidden success').addClass('error').html('Missing parameters!');
+	                return;
+	            }
+	            var query = {'student_id': sid, 'code': code};
+	            var fields = {
+                    "student_id": 1, "student_name": 1, "email": 1,
+                    "prelims_ng": 1,"prelims_ug": 1,
+                    "midterms_ng": 1,"midterms_ug": 1,
+                    "prefinals_ng": 1,"prefinals_ug": 1,
+                    "finals_ng": 1,"finals_ug": 1,
+	            };
+                var hints = {"$max": 1, "$fields": fields};
+                db.cs318ay2324sem1.find(query, hints, function(err, res){
+                  if (!err){
+                    var student = res[0];
+                    student.prelims_ng = +student.prelims_ng.toFixed(2);
+                    student.prelims_ug = +student.prelims_ug.toFixed(2);
+                    student.midterms_ng = +student.midterms_ng.toFixed(2);
+                    student.midterms_ug = +student.midterms_ug.toFixed(2);
+                    student.prefinals_ng = +student.prefinals_ng.toFixed(2);
+                    student.prefinals_ug = +student.prefinals_ug.toFixed(2);
+                    student.finals_ng = +student.finals_ng.toFixed(2);
+                    student.finals_ug = +student.finals_ug.toFixed(2);
+                    student.midterms_avg = (student.prelims_ng + student.midterms_ng) / 2;
+                    student.midterms_avg = +student.midterms_avg.toFixed(2);
+                    student.prefinals_avg = (student.prelims_ng + student.midterms_ng + student.prefinals_ng) / 3;
+                    student.prefinals_avg = +student.prefinals_avg.toFixed(2);
+                    student.finals_avg = (student.prelims_ng + student.midterms_ng + student.prefinals_ng + student.finals_ng) / 4;
+                    student.finals_avg = +student.finals_avg.toFixed(2)
+                    fields.midterms_avg = 1;
+                    fields.prefinals_avg = 1;
+                    fields.finals_avg = 1;
+                    var keys = Object.keys(fields);
+	                $('#message').removeClass('hidden error').addClass('success').html('Record found!');
+	                var table = $('<table class="striped-table"></table>');
+	                for (i in keys) {
+	                    var row = $('<tr></tr>');
+	                    fieldName = keys[i];
+	                    label = keys[i].toUpperCase();
+	                    row.append($('<td>' + label + '</td><td> ' + student[keys[i]] + ' </td>'));
+	                    table.append(row);
+	                }
+	                table.append(row);
+	                $('#data-table').removeClass('hidden').append(table);
+                  }
+                });
+	        });
+	    });
+	</script>
+
+</html>
