@@ -113,7 +113,7 @@
 	            var db = new restdb(apiKey);
 	            var sid = $('#txtSID').val();
 	            if (!sid.length) {
-	                $('#message').removeClass('hidden success').addClass('error').html('Missing parameters!');
+	                $('#message').removeClass('hidden success').addClass('error').html('Student ID required!');
 	                return;
 	            }
 	            var query = {'student_id': sid};
@@ -153,7 +153,7 @@
 	            var sid = $('#txtSID').val();
 	            var code = $('#txtCODE').val();
 	            if (!sid.length || !code.length) {
-	                $('#message').removeClass('hidden success').addClass('error').html('Missing parameters!');
+	                $('#message').removeClass('hidden success').addClass('error').html('Student ID and Code required!');
 	                return;
 	            }
 	            var query = {'student_id': sid, 'code': code};
