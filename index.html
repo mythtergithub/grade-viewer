@@ -197,7 +197,7 @@
         opacity: 1;
         border-radius: 20px;
         padding: 10px;
-        top: -10%;
+        top: -5%;
     }
 
     .faq-modal > h4 {
@@ -329,6 +329,7 @@
         "processData": false,
     };
     $(function () {
+        var originalBodyHeight = parseFloat($('body').css('height').replace('px', ''));
         $('.faq-modal > h4').on('click', function () {
             var $this = $(this);
             $this.next('p').slideDown().removeClass('hidden').siblings('p').slideUp();
@@ -374,17 +375,32 @@
             $('.dark-bg').fadeOut();
             $('.faq-modal').fadeOut();
             $('.contact-us-modal').fadeOut();
+            if ($('body').css('height') > originalBodyHeight) {
+                $('body').css('overflow', 'scroll');
+            }
         });
 
         $('.faq-button').on('click', function () {
+            if ($('#data-table').html() != '&nbsp;') {
+                $('.faq-modal').css({'top': '-65%'});
+            } else {
+                $('.faq-modal').css({'top': '-5%'});
+            }
             $('.dark-bg').fadeIn().removeClass('hidden');
             $('.faq-modal').fadeIn().removeClass('hidden');
+            $('body').css('overflow', 'hidden');
         });
 
 
         $('.contact-us-button').on('click', function () {
+            if ($('#data-table').html() != '&nbsp;') {
+                $('.contact-us-modal').css({'top': '-65%'});
+            } else {
+                $('.contact-us-modal').css({'top': '-5%'});
+            }
             $('.dark-bg').fadeIn().removeClass('hidden');
             $('.contact-us-modal').fadeIn().removeClass('hidden');
+            $('body').css('overflow', 'hidden');
         });
 
         $('#btnGETCODE').on('click', function () {
