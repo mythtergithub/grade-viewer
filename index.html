@@ -16,16 +16,18 @@
         background-color: #ccc;
     }
 
-    #message {
+    #message,
+    #modal-message {
         color: #000;
-        background-color: white;
+        background-color: #fff;
         padding: 10px;
         margin-bottom: 5px;
         border-radius: 5px;
     }
 
-    .app-title {
-        background-color: white;
+    .app-title,
+    .modal-title {
+        background-color: #fff;
         padding: 10px;
         border-radius: 5px;
         margin-top: 0;
@@ -51,12 +53,57 @@
         margin-bottom: 5px;
     }
 
+    .input-group.action-buttons {
+        text-align: center;
+    }
+
+    .input-group > label {
+        display: block;
+        width: 100%;
+    }
+
+    .field-label,
+    .field-value {
+        height: 35px;
+        padding: 5px;
+    }
+
+    .field-label {
+        font-weight: bold;
+    }
+
+    .field-value.text-area {
+        height: 105px;
+    }
+
+    .input-group .field-label {
+        width: 15%;
+        text-align: right;
+        border-right: solid thin #000;
+    }
+
+    .input-group .field-value {
+        width: 80%;
+    }
+
+    .input-group .field-value > input[type="text"],
+    .input-group .field-value > input[type="email"] {
+        width: 100%;
+    }
+
     input[type="text"],
+    input[type="email"],
     input[type="password"] {
         padding: 5px;
         border: none;
         width: 250px;
         font-weight: bold;
+    }
+
+    textarea {
+        width: 100%;
+        height: 100px;
+        border: 0;
     }
 
     button {
@@ -67,13 +114,13 @@
         width: 100%;
         padding: 5px;
         border-radius: 5px;
-        background-color: black;
-        color: white;
+        background-color: #000;
+        color: #fff;
     }
 
     table.striped-table tr:nth-child(even) {
-        background-color: white;
-        color: black;
+        background-color: #fff;
+        color: #000;
     }
 
     table.striped-table td {
@@ -82,14 +129,13 @@
 
     table.striped-table tr:hover {
         background-color: #ccc;
-        color: black;
+        color: #000;
         cursor: pointer;
     }
 
     .close-button {
         position: relative;
         top: 0;
-        float: right;
         display: block;
         width: 10px;
         height: 10px;
@@ -98,12 +144,84 @@
         text-align: center;
         font-size: 9px;
         font-weight: bold;
-        background: black;
-        color: white;
+        background: #000;
+        color: #fff;
     }
 
     .close-button:hover {
         cursor: pointer;
+    }
+
+    .left {
+        float: left;
+    }
+
+    .right {
+        float: right;
+    }
+
+    .footer {
+        font-size: 12px;
+        padding: 5px;
+        margin-bottom: 5px;
+    }
+
+    .dark-bg {
+        position: absolute;
+        background-color: #000;
+        opacity: 0.75;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
+    }
+
+    .faq-button,
+    .contact-us-button {
+        font-weight: bold;
+        text-decoration: dotted;
+    }
+
+    .faq-button:hover,
+    .contact-us-button:hover {
+        cursor: pointer;
+    }
+
+    .faq-modal,
+    .contact-us-modal {
+        z-index: 9999;
+        position: relative;
+        margin: 0 auto;
+        width: 50%;
+        background-color: #fff;
+        opacity: 1;
+        border-radius: 20px;
+        padding: 10px;
+        top: -10%;
+    }
+
+    .faq-modal > h4 {
+        padding: 5px;
+        border: solid thin #fff;
+        margin-bottom: 0;
+    }
+
+    .faq-modal > h4:hover {
+        border: solid thin #000;
+        cursor: pointer;
+    }
+
+    .faq-modal > p {
+        padding: 10px;
+        text-align: justify;
+        margin-top: 0;
+    }
+
+    .contact-us-modal > .close-button,
+    .faq-modal > .close-button {
+        position: absolute;
+        top: 3%;
+        right: 2%;
     }
 </style>
 
@@ -114,17 +232,84 @@
             <input type="text" id="txtSID" placeholder="Enter student ID (e.g. 17-00410)" />
         </div>
         <div class="input-group">
-            <input type="password" id="txtCODE" placeholder="Enter code" /> <span style="font-size: 10pt;"><b>No code yet?</b></span> <button id="btnGETCODE">Get
+            <input type="password" id="txtCODE" placeholder="Enter code" /> <span style="font-size: 10pt;"><b>No code
+                    yet?</b></span> <button id="btnGETCODE">Get
                 code here</button>
         </div>
         <div class="input-group">
             <button id="btnVIEWGRADES">View Grades</button>
         </div>
+        <div class="footer">
+            <div class="left"></div>
+            <div class="right">
+                <span class="faq-button">FAQ</span> | <span class="contact-us-button">Contact Us</span>
+            </div>
+            <div style="clear:both;"></div>
+        </div>
         <div id="message" class="hidden">
-            <span class="close-button">x</span>
-            <span class="content">&nbsp;</span>
+            <span class="close-button right">x</span>
+            <span class="message-content">&nbsp;</span>
         </div>
         <div id="data-table" class="hidden">&nbsp;</div>
+    </div>
+    <div class="dark-bg hidden">&nbsp;</div>
+    <div class="faq-modal hidden">
+        <h2 class="modal-title">Frequently Asked Questions (FAQ)</h2>
+        <span class="close-button">x</span>
+        <h4>How do I see my grades?</h4>
+        <p class="hidden">Enter your Student ID and the unique code that was sent to your email. Click <b>View Grades</b> button to see your
+            grades.</p>
+        <h4>How do I get my unique code?</h4>
+        <p class="hidden">Supply your Student ID and then click <b>Get code here</b> button. You will receive an email containing the code
+            and the link to this page.</p>
+        <h4>I cannot get my code because of missing email address. What should I do?</h4>
+        <p class="hidden">Please contact the administrator and submit your email address. Please wait for the advise for you to try
+            again.</p>
+        <h4>I have provided my Student ID and the the unique code, but nothing happened.</h4>
+        <p class="hidden">Please contact the administrator and report your concern.</p>
+        <h4>How do I contact the administrator?</h4>
+        <p class="hidden">Click <b>Contact Us</b> found on the lower right corner of the app box. Supply the necessary fields, and
+            click <b>Submit</b> button. An email will be sent to the administrator containing your concern.</p>
+    </div>
+    <div class="contact-us-modal hidden">
+        <h2 class="modal-title">Contact Us</h2>
+        <span class="close-button">x</span>
+        <div class="input-group">
+            <label>
+                <div class="field-label left">Name</div>
+                <div class="field-value left"><input id="txtSenderName" type="text" placeholder="e.g., John Doe" /></div>
+                <div style="clear:both;"></div>
+            </label>
+        </div>
+        <div class="input-group">
+            <label>
+                <div class="field-label left">Email <span>*</span></div>
+                <div class="field-value left"><input id="txtSenderEmail" type="email" placeholder="e.g., john.doe@fakeemail.com" /></div>
+                <div style="clear:both;"></div>
+            </label>
+        </div>
+        <div class="input-group">
+            <label>
+                <div class="field-label left">Subject <span>*</span></div>
+                <div class="field-value left"><input id="txtSubject" type="text" placeholder="e.g., Missing email issue" /></div>
+                <div style="clear:both;"></div>
+            </label>
+        </div>
+        <div class="input-group">
+            <label>
+                <div class="field-label left">Message <span>*</span></div>
+                <div class="field-value text-area left"><textarea id="txtMessage" placeholder="e.g., Requesting to update my email to john.doe@fakeemail.com. Thanks."></textarea></div>
+                <div style="clear:both;"></div>
+            </label>
+        </div>
+        <div class="input-group action-buttons">
+            <button id="btnSubmitMessage">Submit</button>
+            <button id="btnResetContactUsForm">Reset</button>
+        </div>
+        <div id="modal-message" class="hidden">
+            <span class="close-button right">x</span>
+            <span class="modal-message-content">&nbsp;</span>
+        </div>
     </div>
 </body>
 <script src="https://ncfjourney-eb3b.restdb.io/rest/_jsapi.js"></script>
@@ -144,14 +329,62 @@
         "processData": false,
     };
     $(function () {
+        $('.faq-modal > h4').on('click', function () {
+            var $this = $(this);
+            $this.next('p').slideDown().removeClass('hidden').siblings('p').slideUp();
+        })
+
         function clearMessage() {
-            $('#message').removeClass('success error').addClass('hidden').children('.content').html('');
+            $('#message').removeClass('success error').fadeOut().children('.message-content').html('');
         }
+
+        function clearModalMessage() {
+            $('#modal-message').removeClass('success error').fadeOut().children('.modal-message-content').html('');
+        }
+
+        function resetContactUsForm() {
+            var fields = $('.contact-us-modal input');
+            $.each(fields, function (i, field) {
+                $(field).val('');
+            });
+            $('.contact-us-modal textarea').val('');
+        }
+
         $('#txtSID').focus();
 
-        $('.close-button').on('click', function() {
+        $('#message > .close-button').on('click', function () {
             var $this = $(this);
             clearMessage();
+        });
+
+        $('#modal-message > .close-button').on('click', function () {
+            var $this = $(this);
+            clearModalMessage();
+        });
+
+        $('.contact-us-modal > .close-button').on('click', function () {
+            $('.dark-bg').click();
+        });
+
+        $('.faq-modal > .close-button').on('click', function () {
+            $('.dark-bg').click();
+        });
+
+        $('.dark-bg').on('click', function () {
+            $('.dark-bg').fadeOut();
+            $('.faq-modal').fadeOut();
+            $('.contact-us-modal').fadeOut();
+        });
+
+        $('.faq-button').on('click', function () {
+            $('.dark-bg').fadeIn().removeClass('hidden');
+            $('.faq-modal').fadeIn().removeClass('hidden');
+        });
+
+
+        $('.contact-us-button').on('click', function () {
+            $('.dark-bg').fadeIn().removeClass('hidden');
+            $('.contact-us-modal').fadeIn().removeClass('hidden');
         });
 
         $('#btnGETCODE').on('click', function () {
@@ -161,7 +394,7 @@
             var db = new restdb(apiKey);
             var sid = $('#txtSID').val();
             if (!sid.length) {
-                $('#message').removeClass('hidden success').addClass('error').children('.content').html('Student ID required!');
+                $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Student ID required!');
                 $('#txtSID').focus();
                 $this.removeAttr('disabled');
                 return;
@@ -172,19 +405,19 @@
                 if (!err) {
                     var student = res[0];
                     if (!student.email.length) {
-                        $('#message').removeClass('hidden success').addClass('error').children('.content').html('Missing email address!');
+                        $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Missing email address!');
                         $this.removeAttr('disabled');
                         return;
                     }
                     if (!student.code.length) {
-                        $('#message').removeClass('hidden success').addClass('error').children('.content').html('Missing code!');
+                        $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Missing code!');
                         $this.removeAttr('disabled');
                         return;
                     }
                     if (student.code_sent) {
                         var conf = confirm("Code has already been sent. Resend?");
                         if (!conf) {
-                            $('#message').removeClass('hidden success').addClass('error').children('.content').html('Code has already been sent!');
+                            $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Code has already been sent!');
                             $this.removeAttr('disabled');
                             return;
                         }
@@ -199,7 +432,7 @@
                     $.ajax(ajaxSettings)
                         .done(function (response) {
                             $this.removeAttr('disabled');
-                            $('#message').removeClass('hidden error').addClass('success').children('.content').html('Unique code sent! Please check your email.');
+                            $('#message').removeClass('hidden error').addClass('success').children('.message-content').html('Unique code sent! Please check your email.');
                             ajaxSettings.method = "PUT";
                             ajaxSettings.url = apiUrl + "rest/cs318ay2324sem1/" + student._id;
                             student.code_sent = true;
@@ -222,7 +455,7 @@
             var sid = $('#txtSID').val();
             var code = $('#txtCODE').val();
             if (!sid.length || !code.length) {
-                $('#message').removeClass('hidden success').addClass('error').children('.content').html('Student ID and Code required!');
+                $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Student ID and Code required!');
                 $('#txtSID').focus();
                 return;
             }
@@ -256,7 +489,7 @@
                     fields.prefinals_avg = 1;
                     fields.finals_avg = 1;
                     var keys = Object.keys(fields);
-                    $('#message').removeClass('hidden error').addClass('success').children('.content').html('Record found!');
+                    $('#message').removeClass('hidden error').addClass('success').children('.message-content').html('Record found!');
                     var table = $('<table class="striped-table"></table>');
                     for (i in keys) {
                         var row = $('<tr></tr>');
@@ -269,6 +502,30 @@
                     $('#data-table').removeClass('hidden').append(table);
                 }
             });
+        });
+
+        $('#btnSubmitMessage').on('click', function () {
+            var $this = $(this);
+            $this.attr('disabled', 'disabled');
+            var db = new restdb(apiKey);
+            var senderName = $('#txtSenderName').val();
+            var senderEmail = $('#txtSenderEmail').val();
+            var subject = $('#txtSubject').val();
+            var message = $('#txtMessage').val();
+            var emailSettings = { "from_name": senderName, "from": senderEmail, "subject": subject, "body": message };
+            var newMessage = new db.emailinbound(emailSettings);
+            newMessage.save(function (err, res) {
+                if (!err) {
+                    $('#modal-message').addClass('success').removeClass('hidden').children('.modal-message-content').html('Message succesfully sent!');
+                } else {
+                    $('#modal-message').addClass('error').removeClass('hidden').children('.modal-message-content').html('Something went wrong!');
+                    $this.removeAttr('disabled');
+                }
+            });
+        });
+
+        $('#btnResetContactUsForm').on('click', function () {
+            resetContactUsForm();
         });
     });
 </script>
