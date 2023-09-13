@@ -85,6 +85,26 @@
         color: black;
         cursor: pointer;
     }
+
+    .close-button {
+        position: relative;
+        top: 0;
+        float: right;
+        display: block;
+        width: 10px;
+        height: 10px;
+        border-radius: 10px;
+        padding: 5px;
+        text-align: center;
+        font-size: 9px;
+        font-weight: bold;
+        background: black;
+        color: white;
+    }
+
+    .close-button:hover {
+        cursor: pointer;
+    }
 </style>
 
 <body>
@@ -100,7 +120,10 @@
         <div class="input-group">
             <button id="btnVIEWGRADES">View Grades</button>
         </div>
-        <div id="message" class="hidden">&nbsp;</div>
+        <div id="message" class="hidden">
+            <span class="close-button">x</span>
+            <span class="content">&nbsp;</span>
+        </div>
         <div id="data-table" class="hidden">&nbsp;</div>
     </div>
 </body>
@@ -122,9 +145,14 @@
     };
     $(function () {
         function clearMessage() {
-            $('#message').removeClass('success error').addClass('hidden').html('')
+            $('#message').removeClass('success error').addClass('hidden').children('.content').html('');
         }
         $('#txtSID').focus();
+
+        $('.close-button').on('click', function() {
+            var $this = $(this);
+            clearMessage();
+        });
 
         $('#btnGETCODE').on('click', function () {
             var $this = $(this);
@@ -133,7 +161,7 @@
             var db = new restdb(apiKey);
             var sid = $('#txtSID').val();
             if (!sid.length) {
-                $('#message').removeClass('hidden success').addClass('error').html('Student ID required!');
+                $('#message').removeClass('hidden success').addClass('error').children('.content').html('Student ID required!');
                 $('#txtSID').focus();
                 $this.removeAttr('disabled');
                 return;
@@ -144,19 +172,19 @@
                 if (!err) {
                     var student = res[0];
                     if (!student.email.length) {
-                        $('#message').removeClass('hidden success').addClass('error').html('Missing email address!');
+                        $('#message').removeClass('hidden success').addClass('error').children('.content').html('Missing email address!');
                         $this.removeAttr('disabled');
                         return;
                     }
                     if (!student.code.length) {
-                        $('#message').removeClass('hidden success').addClass('error').html('Missing code!');
+                        $('#message').removeClass('hidden success').addClass('error').children('.content').html('Missing code!');
                         $this.removeAttr('disabled');
                         return;
                     }
                     if (student.code_sent) {
                         var conf = confirm("Code has already been sent. Resend?");
                         if (!conf) {
-                            $('#message').removeClass('hidden success').addClass('error').html('Code has already been sent!');
+                            $('#message').removeClass('hidden success').addClass('error').children('.content').html('Code has already been sent!');
                             $this.removeAttr('disabled');
                             return;
                         }
@@ -171,7 +199,7 @@
                     $.ajax(ajaxSettings)
                         .done(function (response) {
                             $this.removeAttr('disabled');
-                            $('#message').removeClass('hidden error').addClass('success').html('Unique code sent! Please check your email.');
+                            $('#message').removeClass('hidden error').addClass('success').children('.content').html('Unique code sent! Please check your email.');
                             ajaxSettings.method = "PUT";
                             ajaxSettings.url = apiUrl + "rest/cs318ay2324sem1/" + student._id;
                             ajaxSettings.data = JSON.stringify({"code_sent": true});
@@ -190,7 +218,7 @@
             var sid = $('#txtSID').val();
             var code = $('#txtCODE').val();
             if (!sid.length || !code.length) {
-                $('#message').removeClass('hidden success').addClass('error').html('Student ID and Code required!');
+                $('#message').removeClass('hidden success').addClass('error').children('.content').html('Student ID and Code required!');
                 $('#txtSID').focus();
                 return;
             }
@@ -224,7 +252,7 @@
                     fields.prefinals_avg = 1;
                     fields.finals_avg = 1;
                     var keys = Object.keys(fields);
-                    $('#message').removeClass('hidden error').addClass('success').html('Record found!');
+                    $('#message').removeClass('hidden error').addClass('success').children('.content').html('Record found!');
                     var table = $('<table class="striped-table"></table>');
                     for (i in keys) {
                         var row = $('<tr></tr>');
