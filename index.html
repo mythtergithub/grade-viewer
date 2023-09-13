@@ -115,7 +115,8 @@
         "crossDomain": true,
         "headers": {
             "x-apikey": apiKey,
-            "content-type": "application/json"
+            "content-type": "application/json",
+            "cache-control": "no-cache",
         },
         "processData": false,
     };
@@ -126,31 +127,37 @@
         $('#txtSID').focus();
 
         $('#btnGETCODE').on('click', function () {
+            var $this = $(this);
+            $this.attr('disabled', 'disabled');
             clearMessage();
             var db = new restdb(apiKey);
             var sid = $('#txtSID').val();
             if (!sid.length) {
                 $('#message').removeClass('hidden success').addClass('error').html('Student ID required!');
                 $('#txtSID').focus();
+                $this.removeAttr('disabled');
                 return;
             }
             var query = { 'student_id': sid };
-            var hints = { "$max": 1, "$fields": { "student_name": 1, "email": 1, "code": 1, "code_sent": 1 } };
+            var hints = { "$max": 1, "$fields": { "_id": 1, "student_name": 1, "email": 1, "code": 1, "code_sent": 1 } };
             db.cs318ay2324sem1.find(query, hints, function (err, res) {
                 if (!err) {
                     var student = res[0];
                     if (!student.email.length) {
                         $('#message').removeClass('hidden success').addClass('error').html('Missing email address!');
+                        $this.removeAttr('disabled');
                         return;
                     }
                     if (!student.code.length) {
                         $('#message').removeClass('hidden success').addClass('error').html('Missing code!');
+                        $this.removeAttr('disabled');
                         return;
                     }
                     if (student.code_sent) {
                         var conf = confirm("Code has already been sent. Resend?");
                         if (!conf) {
                             $('#message').removeClass('hidden success').addClass('error').html('Code has already been sent!');
+                            $this.removeAttr('disabled');
                             return;
                         }
                     }
@@ -163,7 +170,12 @@
                     ajaxSettings.data = JSON.stringify(emailProperties);
                     $.ajax(ajaxSettings)
                         .done(function (response) {
+                            $this.removeAttr('disabled');
                             $('#message').removeClass('hidden error').addClass('success').html('Unique code sent! Please check your email.');
+                            ajaxSettings.method = "PUT";
+                            ajaxSettings.url = apiUrl + "rest/cs318ay2324sem1/" + student._id;
+                            ajaxSettings.data = JSON.stringify({"code_sent": true});
+                            $.ajax(ajaxSettings);
                         }).fail(function (response) {
                             console.log(response);
                             $('#message').removeClass('hidden success').addClass('error').html('Something went wrong! Please contact your administrator.');
