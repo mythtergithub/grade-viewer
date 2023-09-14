@@ -403,9 +403,15 @@
             $('body').css('overflow', 'hidden');
         });
 
+        $('#txtSID').on('keypress', function () {
+            $('#btnGETCODE').removeAttr('disabled');
+            $('#btnVIEWGRADES').removeAttr('disabled');
+        });
+
         $('#btnGETCODE').on('click', function () {
             var $this = $(this);
             $this.attr('disabled', 'disabled');
+            $('#btnVIEWGRADES').attr('disabled', 'disabled');
             clearMessage();
             var db = new restdb(apiKey);
             var sid = $('#txtSID').val();
@@ -419,6 +425,11 @@
             var hints = { "$max": 1, "$fields": { "_id": 1, "student_id": 1, "student_name": 1, "email": 1, "code": 1, "code_sent": 1 } };
             db.cs318ay2324sem1.find(query, hints, function (err, res) {
                 if (!err) {
+                    if (!res.length) {
+                        $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Failed to retrieve student record!');
+                        $this.removeAttr('disabled');
+                        return;
+                    }
                     var student = res[0];
                     if (!student.email.length) {
                         $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Missing email address!');
@@ -447,7 +458,6 @@
                     ajaxSettings.data = JSON.stringify(emailProperties);
                     $.ajax(ajaxSettings)
                         .done(function (response) {
-                            $this.removeAttr('disabled');
                             $('#message').removeClass('hidden error').addClass('success').children('.message-content').html('Unique code sent! Please check your email.');
                             ajaxSettings.method = "PUT";
                             ajaxSettings.url = apiUrl + "rest/cs318ay2324sem1/" + student._id;
@@ -460,12 +470,18 @@
                         }).fail(function (response) {
                             console.log(response);
                             $('#message').removeClass('hidden success').addClass('error').html('Something went wrong! Please contact your administrator.');
+                            $this.removeAttr('disabled');
                         });
+                } else {
+                    $this.removeAttr('disabled');
                 }
             });
         });
 
         $('#btnVIEWGRADES').on('click', function () {
+            var $this = $(this);
+            $this.attr('disabled', 'disabled');
+            $('#btnGETCODE').attr('disabled', 'disabled');
             clearMessage();
             var db = new restdb(apiKey);
             var sid = $('#txtSID').val();
@@ -473,6 +489,7 @@
             if (!sid.length || !code.length) {
                 $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Student ID and Code required!');
                 $('#txtSID').focus();
+                $this.removeAttr('disabled');
                 return;
             }
             var query = { 'student_id': sid, 'code': code };
@@ -486,6 +503,7 @@
             var hints = { "$max": 1, "$fields": fields };
             db.cs318ay2324sem1.find(query, hints, function (err, res) {
                 if (!err) {
+                    $('#txtCODE').val('');
                     var student = res[0];
                     student.prelims_ng = +student.prelims_ng.toFixed(2);
                     student.prelims_ug = +student.prelims_ug.toFixed(2);
@@ -516,6 +534,8 @@
                     }
                     table.append(row);
                     $('#data-table').removeClass('hidden').append(table);
+                } else {
+                    $this.removeAttr('disabled');
                 }
             });
         });
