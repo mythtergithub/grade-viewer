@@ -540,6 +540,10 @@
                 }
             });
         });
+        
+        $('#txtSenderEmail, #txtSubject, #txtMessage').on('keypress', function () {
+            $(this).css({'border': 'none'});
+        });
 
         $('#btnSubmitMessage').on('click', function () {
             var $this = $(this);
@@ -549,6 +553,14 @@
             var senderEmail = $('#txtSenderEmail').val();
             var subject = $('#txtSubject').val();
             var message = $('#txtMessage').val();
+            if (!senderEmail.length || !subject.length || !message.length) {
+                $('#modal-message').addClass('error').removeClass('hidden').children('.modal-message-content').html('Missing required fields!');
+                $('#txtSenderEmail').css({'border': 'solid thin red'});
+                $('#txtSubject').css({'border': 'solid thin red'});
+                $('#txtMessage').css({'border': 'solid thin red'});
+                $this.removeAttr('disabled');
+                return
+            }
             var emailSettings = { "from_name": senderName, "from": senderEmail, "subject": subject, "body": message };
             var newMessage = new db.emailinbound(emailSettings);
             newMessage.save(function (err, res) {
