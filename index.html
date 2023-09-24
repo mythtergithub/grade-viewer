@@ -441,7 +441,7 @@
                         $this.removeAttr('disabled');
                         return;
                     }
-                    if (student.code_sent) {
+                    if (student.code_sent == 1) {
                         var conf = confirm("Code has already been sent. Resend?");
                         if (!conf) {
                             $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Code has already been sent!');
@@ -461,7 +461,7 @@
                             $('#message').removeClass('hidden error').addClass('success').children('.message-content').html('Unique code sent! Please check your email.');
                             ajaxSettings.method = "PUT";
                             ajaxSettings.url = apiUrl + "rest/cs318ay2324sem1/" + student._id;
-                            student.code_sent = true;
+                            student.code_sent = 1;
                             delete student._id;
                             delete student.email;
                             delete student.code;
