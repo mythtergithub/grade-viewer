@@ -125,12 +125,18 @@
 
     table.striped-table td {
         padding: 5px;
+        height: 30px;
     }
 
     table.striped-table tr:hover {
         background-color: #ccc;
         color: #000;
+        font-weight: bold;
         cursor: pointer;
+    }
+
+    #data-table {
+        text-align: center;
     }
 
     .close-button {
@@ -328,6 +334,7 @@
         },
         "processData": false,
     };
+    var loaderImage = '<img src="images/loading-12.gif" width="10%" />';
     $(function () {
         var originalBodyHeight = parseFloat($('body').css('height').replace('px', ''));
         $('.faq-modal > h4').on('click', function () {
@@ -408,43 +415,47 @@
             $('#btnVIEWGRADES').removeAttr('disabled');
         });
 
+        $('#txtCODE').on('keyup paste', function () {
+            $('#btnVIEWGRADES').removeAttr('disabled');
+        });
+
         $('#btnGETCODE').on('click', function () {
             var $this = $(this);
             $this.attr('disabled', 'disabled');
             $('#btnVIEWGRADES').attr('disabled', 'disabled');
-            clearMessage();
             var db = new restdb(apiKey);
             var sid = $('#txtSID').val();
             if (!sid.length) {
-                $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Student ID required!');
+                $('#message').removeClass('hidden success').addClass('error').show().children('.message-content').html('Student ID required!');
                 $('#txtSID').focus();
                 $this.removeAttr('disabled');
                 return;
             }
+            clearMessage();
             var query = { 'student_id': sid };
             var hints = { "$max": 1, "$fields": { "_id": 1, "student_id": 1, "student_name": 1, "email": 1, "code": 1, "code_sent": 1 } };
             db.cs318ay2324sem1.find(query, hints, function (err, res) {
                 if (!err) {
                     if (!res.length) {
-                        $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Failed to retrieve student record!');
+                        $('#message').removeClass('hidden success').addClass('error').show().children('.message-content').html('Failed to retrieve student record!');
                         $this.removeAttr('disabled');
                         return;
                     }
                     var student = res[0];
                     if (!student.email.length) {
-                        $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Missing email address!');
+                        $('#message').removeClass('hidden success').addClass('error').show().children('.message-content').html('Missing email address!');
                         $this.removeAttr('disabled');
                         return;
                     }
                     if (!student.code.length) {
-                        $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Missing code!');
+                        $('#message').removeClass('hidden success').addClass('error').show().children('.message-content').html('Missing code!');
                         $this.removeAttr('disabled');
                         return;
                     }
                     if (student.code_sent == 1) {
                         var conf = confirm("Code has already been sent. Resend?");
                         if (!conf) {
-                            $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Code has already been sent!');
+                            $('#message').removeClass('hidden success').addClass('error').show().children('.message-content').html('Code has already been sent!');
                             $this.removeAttr('disabled');
                             return;
                         }
@@ -458,7 +469,7 @@
                     ajaxSettings.data = JSON.stringify(emailProperties);
                     $.ajax(ajaxSettings)
                         .done(function (response) {
-                            $('#message').removeClass('hidden error').addClass('success').children('.message-content').html('Unique code sent! Please check your email.');
+                            $('#message').removeClass('hidden error').addClass('success').show().children('.message-content').html('Unique code sent! Please check your email.');
                             ajaxSettings.method = "PUT";
                             ajaxSettings.url = apiUrl + "rest/cs318ay2324sem1/" + student._id;
                             student.code_sent = 1;
@@ -469,7 +480,7 @@
                             $.ajax(ajaxSettings);
                         }).fail(function (response) {
                             console.log(response);
-                            $('#message').removeClass('hidden success').addClass('error').html('Something went wrong! Please contact your administrator.');
+                            $('#message').removeClass('hidden success').addClass('error').show().html('Something went wrong! Please contact your administrator.');
                             $this.removeAttr('disabled');
                         });
                 } else {
@@ -479,16 +490,17 @@
         });
 
         $('#btnVIEWGRADES').on('click', function () {
+            clearMessage();
             var $this = $(this);
             $this.attr('disabled', 'disabled');
             $('#btnGETCODE').attr('disabled', 'disabled');
-            $('#data-table').addClass('hidden').html('');
-            clearMessage();
+            $('#data-table').removeClass('hidden').show().html(loaderImage);
             var db = new restdb(apiKey);
             var sid = $('#txtSID').val();
             var code = $('#txtCODE').val();
             if (!sid.length || !code.length) {
-                $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Student ID and Code required!');
+                $('#data-table').addClass('hidden').html('');
+                $('#message').removeClass('hidden success').addClass('error').show().children('.message-content').html('Student ID and Code required!');
                 $('#txtSID').focus();
                 $this.removeAttr('disabled');
                 $('#btnGETCODE').removeAttr('disabled');
@@ -504,13 +516,16 @@
             };
             var hints = { "$max": 1, "$fields": fields };
             db.cs318ay2324sem1.find(query, hints, function (err, res) {
+                console.log(res);
                 if (!err) {
+                    $('#data-table').addClass('hidden').html('');
                     $('#txtCODE').val('');
                     if (!res.length) {
-                        $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Failed to retrieve info!');
+                        $('#message').removeClass('hidden success').addClass('error').show().children('.message-content').html('Failed to retrieve info!');
                         $('#txtSID').focus();
                         $this.removeAttr('disabled');
                         $('#btnGETCODE').removeAttr('disabled');
+                        return;
                     }
                     var student = res[0];
                     student.prelims_ng = +student.prelims_ng.toFixed(2);
@@ -531,17 +546,17 @@
                     fields.prefinals_avg = 1;
                     fields.finals_avg = 1;
                     var keys = Object.keys(fields);
-                    $('#message').removeClass('hidden error').addClass('success').children('.message-content').html('Record found!');
+                    $('#message').removeClass('hidden error').addClass('success').show().children('.message-content').html('Record found!');
                     var table = $('<table class="striped-table"></table>');
                     for (i in keys) {
                         var row = $('<tr></tr>');
                         fieldName = keys[i];
                         label = keys[i].toUpperCase();
-                        row.append($('<td>' + label + '</td><td> ' + student[keys[i]] + ' </td>'));
+                        row.append($('<td width="30%">' + label + '</td><td> ' + student[keys[i]] + ' </td>'));
                         table.append(row);
                     }
                     table.append(row);
-                    $('#data-table').removeClass('hidden').append(table);
+                    $('#data-table').removeClass('hidden').show().append(table);
                 } else {
                     $this.removeAttr('disabled');
                 }
@@ -561,7 +576,7 @@
             var subject = $('#txtSubject').val();
             var message = $('#txtMessage').val();
             if (!senderEmail.length || !subject.length || !message.length) {
-                $('#modal-message').addClass('error').removeClass('hidden').children('.modal-message-content').html('Missing required fields!');
+                $('#modal-message').addClass('error').removeClass('hidden').show().children('.modal-message-content').html('Missing required fields!');
                 $('#txtSenderEmail').css({'border': 'solid thin red'});
                 $('#txtSubject').css({'border': 'solid thin red'});
                 $('#txtMessage').css({'border': 'solid thin red'});
@@ -572,9 +587,9 @@
             var newMessage = new db.emailinbound(emailSettings);
             newMessage.save(function (err, res) {
                 if (!err) {
-                    $('#modal-message').addClass('success').removeClass('hidden').children('.modal-message-content').html('Message succesfully sent!');
+                    $('#modal-message').addClass('success').removeClass('hidden').show().children('.modal-message-content').html('Message succesfully sent!');
                 } else {
-                    $('#modal-message').addClass('error').removeClass('hidden').children('.modal-message-content').html('Something went wrong!');
+                    $('#modal-message').addClass('error').removeClass('hidden').show().children('.modal-message-content').html('Something went wrong!');
                     $this.removeAttr('disabled');
                 }
             });
