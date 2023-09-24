@@ -403,7 +403,7 @@
             $('body').css('overflow', 'hidden');
         });
 
-        $('#txtSID').on('keypress', function () {
+        $('#txtSID').on('keyup paste', function () {
             $('#btnGETCODE').removeAttr('disabled');
             $('#btnVIEWGRADES').removeAttr('disabled');
         });
@@ -491,6 +491,7 @@
                 $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Student ID and Code required!');
                 $('#txtSID').focus();
                 $this.removeAttr('disabled');
+                $('#btnGETCODE').removeAttr('disabled');
                 return;
             }
             var query = { 'student_id': sid, 'code': code };
@@ -509,6 +510,7 @@
                         $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Failed to retrieve info!');
                         $('#txtSID').focus();
                         $this.removeAttr('disabled');
+                        $('#btnGETCODE').removeAttr('disabled');
                     }
                     var student = res[0];
                     student.prelims_ng = +student.prelims_ng.toFixed(2);
