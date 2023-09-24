@@ -505,6 +505,11 @@
             db.cs318ay2324sem1.find(query, hints, function (err, res) {
                 if (!err) {
                     $('#txtCODE').val('');
+                    if (!res.length) {
+                        $('#message').removeClass('hidden success').addClass('error').children('.message-content').html('Failed to retrieve info!');
+                        $('#txtSID').focus();
+                        $this.removeAttr('disabled');
+                    }
                     var student = res[0];
                     student.prelims_ng = +student.prelims_ng.toFixed(2);
                     student.prelims_ug = +student.prelims_ug.toFixed(2);
