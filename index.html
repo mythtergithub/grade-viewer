@@ -482,6 +482,7 @@
             var $this = $(this);
             $this.attr('disabled', 'disabled');
             $('#btnGETCODE').attr('disabled', 'disabled');
+            $('#data-table').addClass('hidden').html('');
             clearMessage();
             var db = new restdb(apiKey);
             var sid = $('#txtSID').val();
