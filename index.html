@@ -358,6 +358,62 @@
             $('.contact-us-modal textarea').val('');
         }
 
+        function getUG(NG) {
+            if (NG < 75) {
+                return 5.00;
+            } else if (NG >= 75.00 && <= 75.99) {
+                return 3.00;
+            } else if (NG >= 76.00 && NG <= 76.99) {
+                return 2.90;
+            } else if (NG >= 77.00 && NG <= 77.99) {
+                return 2.80;
+            } else if (NG >= 78.00 && NG <= 78.99) {
+                return 2.75;
+            } else if (NG >= 79.00 && NG <= 79.99) {
+                return 2.70;
+            } else if (NG >= 80.00 && NG <= 80.99) {
+                return 2.60;
+            } else if (NG >= 81.00 && NG <= 81.99) {
+                return 2.50;
+            } else if (NG >= 82.00 && NG <= 82.99) {
+                return 2.40;
+            } else if (NG >= 83.00 && NG <= 83.99) {
+                return 2.30;
+            } else if (NG >= 84.00 && NG <= 84.99) {
+                return 2.25;
+            } else if (NG >= 85.00 && NG <= 85.99) {
+                return 2.20;
+            } else if (NG >= 86.00 && NG <= 86.99) {
+                return 2.10;
+            } else if (NG >= 87.00 && NG <= 87.99) {
+                return 2.00;
+            } else if (NG >= 88.00 && NG <= 88.99) {
+                return 1.90;
+            } else if (NG >= 89.00 && NG <= 89.99) {
+                return 1.80;
+            } else if (NG >= 90.00 && NG <= 90.99) {
+                return 1.75;
+            } else if (NG >= 91.00 && NG <= 91.99) {
+                return 1.70;
+            } else if (NG >= 92.00 && NG <= 92.99) {
+                return 1.60;
+            } else if (NG >= 93.00 && NG <= 93.99) {
+                return 1.50;
+            } else if (NG >= 94.00 && NG <= 94.99) {
+                return 1.40;
+            } else if (NG >= 95.00 && NG <= 95.99) {
+                return 1.30;
+            } else if (NG >= 96.00 && NG <= 96.99) {
+                return 1.25;
+            } else if (NG >= 97.00 && NG <= 97.99) {
+                return 1.20;
+            } else if (NG >= 98.00 && NG <= 98.99) {
+                return 1.10;
+            } else if (NG >= 99.00 && NG <= 100.00) {
+                return 1.00;
+            }
+        }
+
         $('#txtSID').focus();
 
         $('#message > .close-button').on('click', function () {
@@ -542,9 +598,11 @@
                     student.prefinals_avg = +student.prefinals_avg.toFixed(2);
                     student.finals_avg = (student.prelims_ng + student.midterms_ng + student.prefinals_ng + student.finals_ng) / 4;
                     student.finals_avg = +student.finals_avg.toFixed(2)
+                    student.finals_avg_ug = +getUG(student.finals_avg);
                     fields.midterms_avg = 1;
                     fields.prefinals_avg = 1;
                     fields.finals_avg = 1;
+                    fields.finals_avg_ug = 1;
                     var keys = Object.keys(fields);
                     $('#message').removeClass('hidden error').addClass('success').show().children('.message-content').html('Record found!');
                     var table = $('<table class="striped-table"></table>');
